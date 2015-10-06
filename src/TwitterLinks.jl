@@ -12,7 +12,7 @@ function to_id(v::AbstractString)
 end
 to_id(v::Number) = Int32(v)
 
-function mapblock(blk::Matrix)
+function mapblock(blk::Matrix, MAXNODE)
     HadoopBlocks.logmsg("map starting...")
     I = Int32[]
     J = Int32[]
@@ -61,9 +61,9 @@ function wait_results(j_mon)
     println("")
 end
 
-function _as_sparse(file, typ)
+function as_sparse(file, typ, dim)
     f = (typ === :csv) ? read_as_csv : read_as_tsv
-    j = dmapreduce(MRHdfsFileInput([file], f), mapblock, collectblock, reduceblocks)
+    j = dmapreduce(MRHdfsFileInput([file], f), (blk)->mapblock(blk, dim), collectblock, reduceblocks)
     wait_results(j)
     R = results(j)
     (R[1] == "complete") && (return R[2])
