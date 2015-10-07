@@ -49,6 +49,29 @@ function reduceblocks(reduced, collected...)
     reduced
 end
 
+function collectrefs(collected, blk)
+    HadoopBlocks.logmsg("collect starting...")
+    isempty(blk) && (return collected)
+    if collected == nothing
+        collected_blk = blk
+        collected = RemoteRef()
+    else
+        collected_blk = take!(collected) .+ blk
+    end
+    put!(collected, collected_blk)
+    HadoopBlocks.logmsg("collect finished.")
+    collected
+end
+
+function reducerefs(reduced, collected...)
+    HadoopBlocks.logmsg("reduce starting...")
+    for blk in collected
+        reduced = (reduced == nothing) ? RemoteRef[] : push!(reduced, blk)
+    end
+    HadoopBlocks.logmsg("reduce finished.")
+    reduced
+end
+
 function wait_results(j_mon)
     while true
         jstatus,jstatusinfo = status(j_mon,true)
@@ -64,6 +87,15 @@ end
 function as_sparse(file, typ, dim)
     f = (typ === :csv) ? read_as_csv : read_as_tsv
     j = dmapreduce(MRHdfsFileInput([file], f), (blk)->mapblock(blk, dim), collectblock, reduceblocks)
+    wait_results(j)
+    R = results(j)
+    (R[1] == "complete") && (return R[2])
+    error("job in error $(R[2])")
+end
+
+function as_distributed_sparse(file, typ, dim)
+    f = (typ === :csv) ? read_as_csv : read_as_tsv
+    j = dmapreduce(MRHdfsFileInput([file], f), (blk)->mapblock(blk, dim), collectrefs, reducerefs)
     wait_results(j)
     R = results(j)
     (R[1] == "complete") && (return R[2])
