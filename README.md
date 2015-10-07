@@ -1,6 +1,6 @@
 # TwitterLinks
 
-[![Build Status](https://travis-ci.org/tanmaykm/TwitterLinks.jl.svg?branch=master)](https://travis-ci.org/tanmaykm/TwitterLinks.jl)
+Pagerank of twitter link graph. As an example only for learning to use Elly.jl, Blocks.jl and associated packages.
 
 ## Datasets
 - [full extract](http://twitter.mpi-sws.org/data-icwsm2010.html). 41 million vertices. 24GB 
