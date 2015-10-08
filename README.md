@@ -4,7 +4,12 @@ Pagerank of twitter link graph. As an example only for learning to use Elly.jl, 
 
 ## Datasets
 - [full extract](http://twitter.mpi-sws.org/data-icwsm2010.html). 41 million vertices. 24GB 
-- [smaller sample](http://socialcomputing.asu.edu/datasets/Twitter). 11 million vertices. 1.3GB
+- [smaller sample](http://socialcomputing.asu.edu/datasets/Twitter). 11M vertices, 85M edges. 1.3GB
+
+## Packages Used
+- <https://github.com/JuliaParallel/Elly.jl>
+- <https://github.com/JuliaParallel/Blocks.jl>
+- <https://github.com/tanmaykm/HadoopBlocks.jl>
 
 ## Method 1
 
@@ -18,8 +23,7 @@ Pagerank of twitter link graph. As an example only for learning to use Elly.jl, 
 - using TwitterLinks
 - S = TwitterLinks.as_sparse("hdfs://root@" * string(getipaddr()) * ":9000/twitter_small.csv", :csv, 11316811)
 - TwitterLinks.normalize_cols(S)
-- infl = TwitterLinks.find_influencers(S)
-- TwitterLinks.count_connections(S, infl)
+- infl = TwitterLinks.find_top_influencer(S)
 ````
 
 ## Method 2
@@ -34,7 +38,5 @@ Pagerank of twitter link graph. As an example only for learning to use Elly.jl, 
 - using TwitterLinks
 - S = TwitterLinks.as_distributed_sparse("hdfs://root@" * string(getipaddr()) * ":9000/twitter_rv.net", :tsv, 61578414)
 - TwitterLinks.normalize_cols(S)
-- infl = TwitterLinks.find_influencers(S)
-- TwitterLinks.count_connections(S, infl)
-
+- infl = TwitterLinks.find_top_influencer(S)
 ````
