@@ -32,6 +32,9 @@ Pagerank of twitter link graph. As an example only for learning to use Elly.jl, 
     - for node in `cat slaves | grep -v master`; do echo $node; julia -e 'Pkg.clone("https://github.com/tanmaykm/TwitterLinks.jl.git")'; done
 - julia --machinefile slaves
 - using TwitterLinks
-- parts = TwitterLinks.as_distributed_sparse("hdfs://root@" * string(getipaddr()) * ":9000/twitter_rv.net", :tsv, 61578414)
+- S = TwitterLinks.as_distributed_sparse("hdfs://root@" * string(getipaddr()) * ":9000/twitter_rv.net", :tsv, 61578414)
+- TwitterLinks.normalize_cols(S)
+- infl = TwitterLinks.find_influencers(S)
+- TwitterLinks.count_connections(S, infl)
 
 ````
